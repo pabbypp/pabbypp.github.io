@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="author" content="平平"><meta name="description" content="Pabbypp的博客"><link rel="alternative" href="/atom.xml" title="Pabbypp" type="application/atom+xml"><link rel="icon" href="/favicon.png"><title> - Pabbypp</title><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><script src="/js/jquery-3.1.1.min.js"></script><script src="/js/fancybox/jquery.fancybox.min.js"></script></head><body style="opacity:0"><header class="head"><h1 class="head-title u-fl"><a href="/">Pabbypp</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a class="head-nav__link" href="/archives">カタログ/（目录）</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"> <time class="post__time" datetime="2018-04-09T11:03:07.000Z">April 9, 2018</time><h1 class="post__title"><a href="/2018/04/09/关于Git及Mac终端命令的方方面面.md/"></a></h1><div class="post__main echo"><h1 id="关于Git及Mac终端命令的方方面面"><a href="#关于Git及Mac终端命令的方方面面" class="headerlink" title="关于Git及Mac终端命令的方方面面"></a>关于Git及Mac终端命令的方方面面</h1><ul>
+<li><h2 id="Git是什么？"><a href="#Git是什么？" class="headerlink" title="Git是什么？"></a>Git是什么？</h2><p>Git是一个开源的分布式版本控制系统，可以有效、高效对项目工程进行统一管理。对于团队开发，也更加方便协作，查看项目的历史版本。git是直接记录快照，而非差异比较。对于任何一个文件，在 Git 内都只有三种状态：已提交（committed），已修改（modified）和已暂存（staged）。<br> Git 管理项目时，文件流转的三个工作区域：Git 的工作目录，暂存区域，以及本地仓库。<br> 每个项目都有一个 Git 目录（译注：如果 git clone 出来的话，就是其中 .git 的目录；如果 git clone –bare 的话，新建的目录本身就是 Git 目录。），它是 Git 用来保存元数据和对象数据库的地方。该目录非常重要，每次克隆镜像仓库的时候，实际拷贝的就是这个目录里面的数据。<br> 从项目中取出某个版本的所有文件和目录，用以开始后续工作的叫做工作目录。这些文件实际上都是从 Git 目录中的压缩对象数据库中提取出来的，接下来就可以在工作目录中对这些文件进行编辑。</p>
+<p> 所谓的暂存区域只不过是个简单的文件，一般都放在 Git 目录中。有时候人们会把这个文件叫做索引文件，不过标准说法还是叫暂存区域。    </p>
+<p> 基本的 Git 工作流程如下：<br>  1.在工作目录中修改某些文件。<br>  2.对修改后的文件进行快照，然后保存到暂存区域。<br>  3.提交更新，将保存在暂存区域的文件快照永久转储到 Git 目录中。  </p>
+<p>  所以，我们可以从文件所处的位置来判断状态：如果是 Git 目录中保存着的特定版本文件，就属于已提交状态；如果作了修改并已放入暂存区域，就属于已暂存状态；如果自上次取出后，作了修改但还没有放到暂存区域，就是已修改状态。</p>
+</li>
+<li><h4 id="Git内部原理"><a href="#Git内部原理" class="headerlink" title="Git内部原理"></a>Git内部原理</h4><p>Git 是一套内容寻址文件系统。很不错。不过这是什么意思呢？ 这种说法的意思是，Git 从核心上来看不过是简单地存储键值对（key-value）。它允许插入任意类型的内容，并会返回一个键值，通过该键值可以在任何时候再取出该内容。可以通过底层命令 hash-object 来示范这点，传一些数据给该命令，它会将数据保存在 .git 目录并返回表示这些数据的键值。</p>
+</li>
+<li><h2 id="Git-分支"><a href="#Git-分支" class="headerlink" title="Git 分支"></a>Git 分支</h2><p>  Git 中的分支，其实本质上仅仅是个指向 commit 对象的可变指针。Git 会使用 master 作为分支的默认名字。在若干次提交后，你其实已经有了一个指向最后一次提交对象的 master 分支，它在每次提交的时候都会自动向前移动。也是从某个提交对象往回看的历史。那么，Git 是如何知道你当前在哪个分支上工作的呢？其实答案也很简单，它保存着一个名为 HEAD 的特别指针。请注意它和你熟知的许多其他版本控制系统（比如 Subversion 或 CVS）里的 HEAD 概念大不相同。在 Git 中，它是一个指向你正在工作中的本地分支的指针（译注：将 HEAD 想象为当前分支的别名。）。运行 git branch 命令，仅仅是建立了一个新的分支，但不会自动切换到这个分支中去，所以，我们依然还在 master 分支里工作。要切换到其他分支，可以执行 git checkout 命令。我们现在转换到新建的 testing 分支：git checkout testing 。这样 HEAD 就指向了 testing 分支。<br> 这条命令做了两件事。它把 HEAD 指针移回到 master 分支，并把工作目录中的文件换成了 master 分支所指向的快照内容。也就是说，现在开始所做的改动，将始于本项目中一个较老的版本。它的主要作用是将 testing 分支里作出的修改暂时取消，这样你就可以向另一个方向进行开发。<br> 遇到冲突时的分支合并：有时候合并操作并不会如此顺利。如果在不同的分支中都修改了同一个文件的同一部分，Git 就无法干净地把两者合到一起（译注：逻辑上说，这种问题只能由人来裁决。）Git 作了合并，但没有提交，它会停下来等你解决冲突。要看看哪些文件在合并时发生冲突，可以用 git status 查阅，任何包含未解决冲突的文件都会以未合并（unmerged）的状态列出。<br> 许多使用 Git 的开发者都喜欢用这种方式来开展工作，比如仅在 master 分支中保留完全稳定的代码，即已经发布或即将发布的代码。与此同时，他们还有一个名为 develop 或 next 的平行分支，专门用于后续的开发，或仅用于稳定性测试 — 当然并不是说一定要绝对稳定，不过一旦进入某种稳定状态，便可以把它合并到 master 里。这样，在确保这些已完成的特性分支（短期分支，比如之前的 iss53 分支）能够通过所有测试，并且不会引入更多错误之后，就可以并到主干分支中，等待下一次的发布。<br> 这些分支全部都是本地分支，这一点很重要。当你在使用分支及合并的时候，一切都是在你自己的 Git 仓库中进行的 — 完全不涉及与服务器的交互。<br>也可 git checkout -b [分支名] [远程名]/[分支名] 设定跟踪分支。</p>
+</li>
+<li><h5 id="远程分支"><a href="#远程分支" class="headerlink" title="远程分支"></a>远程分支</h5><p>远程分支（remote branch）是对远程仓库中的分支的索引。它们是一些无法移动的本地分支；只有在 Git 进行网络交互时才会更新。远程分支就像是书签，提醒着你上次连接远程仓库时上面各分支的位置.<br>跟踪远程分支:从远程分支 checkout 出来的本地分支，称为 跟踪分支 (tracking branch)。跟踪分支是一种和某个远程分支有直接联系的本地分支。在跟踪分支里输入 git push，Git 会自行推断应该向哪个服务器的哪个分支推送数据。同样，在这些分支里运行 git pull 会获取所有远程索引，并把它们的数据都合并到本地分支中来。<br>在克隆仓库时，Git 通常会自动创建一个名为 master 的分支来跟踪 origin/master。这正是 git push 和 git pull 一开始就能正常工作的原因。<br>删除远程分支：如果不再需要某个远程分支了，比如搞定了某个特性并把它合并进了远程的 master 分支（或任何其他存放稳定代码的分支），可以用这个非常无厘头的语法来删除它：git push [远程名] :[分支名]。如果想在服务器上删除 serverfix 分支，运行下面的命令：git push origin :serverfix   方便记忆这条命令的方法：记住我们不久前见过的 git push [远程名] [本地分支]:[远程分支] 语法，如果省略 [本地分支]，那就等于是在说“在这里提取空白然后把它变成[远程分支]”。 </p>
+</li>
+<li><h5 id="从远程仓库中抓取与拉取：clone，fetch与pull区别，"><a href="#从远程仓库中抓取与拉取：clone，fetch与pull区别，" class="headerlink" title="从远程仓库中抓取与拉取：clone，fetch与pull区别，"></a>从远程仓库中抓取与拉取：clone，fetch与pull区别，</h5><p>  如果你使用 clone 命令克隆了一个仓库，命令会自动将其添加为远程仓库并默认以 “origin” 为简写。 所以，git fetch origin 会抓取克隆（或上一次抓取）后新推送的所有工作。 必须注意 git fetch 命令会将数据拉取到你的本地仓库 - 它并不会自动合并或修改你当前的工作。 当准备好时你必须手动将其合并入你的工作。</p>
+<p>  如果你有一个分支设置为跟踪一个远程分支，可以使用 git pull 命令来自动的抓取然后合并远程分支到当前分支。 这对你来说可能是一个更简单或更舒服的工作流程；默认情况下，git clone 命令会自动设置本地 master 分支跟踪克隆的远程仓库的 master 分支（或不管是什么名字的默认分支）。 运行 git pull 通常会从最初克隆的服务器上抓取数据并自动尝试合并到当前所在的分支。</p>
+</li>
+<li><h5 id="分支的变基：把一个分支中的修改整合到另一个分支的办法有两种：merge-和-rebase。"><a href="#分支的变基：把一个分支中的修改整合到另一个分支的办法有两种：merge-和-rebase。" class="headerlink" title="分支的变基：把一个分支中的修改整合到另一个分支的办法有两种：merge 和 rebase。"></a>分支的变基：把一个分支中的修改整合到另一个分支的办法有两种：merge 和 rebase。</h5><p>git checkout experiment<br>git rebase master </p>
+<p>git rebase –onto master server client    取出 client 分支，找出 client 分支和 server 分支的共同祖先之后的变化，然后把它们在 master 上重演一遍<br>git rebase [主分支] [特性分支]   </p>
+<p>如果把变基当成一种在推送之前清理提交历史的手段，而且仅仅变基那些尚未公开的提交对象，就没问题。如果变基那些已经公开的提交对象，并且已经有人基于这些提交对象开展了后续开发工作的话，就会出现叫人沮丧的麻烦。</p>
+</li>
+<li><h2 id="Git-GitHub-Gitlab-的相关Mac终端命令"><a href="#Git-GitHub-Gitlab-的相关Mac终端命令" class="headerlink" title="Git(GitHub,Gitlab)的相关Mac终端命令"></a>Git(GitHub,Gitlab)的相关Mac终端命令</h2></li>
+<li><h4 id="Mac终端基本命令"><a href="#Mac终端基本命令" class="headerlink" title="Mac终端基本命令"></a>Mac终端基本命令</h4><p>ls（list show） 显示当前目录下的文件内容（什么都不加，默认显示当前）<br>ls 可以跟路径配合使用，显示该路径下的文件内容  </p>
+<p>cd （come directory）  (Tab键会自动补齐)<br>cd - 回到上一目录<br>cd .. 回到上一目录<br>cd ~ 回到用户目录（刚打开终端时的目录）<br>(方向键上下键，可以翻看历史命令)<br>ctrl-z 挂起正在运行的进程<br>ctrl-d 发送EOF<br>ctrl-c 结束进程</p>
+<p>取得root权限：“sudo -s”<br>退出root权限：Ctrl+D  </p>
+<p>MAC OS查看端口9000占用情况及杀死进程<br>sudo lsof -i :9000<br>然后根据PID杀进程：<br>sudo kill -9 716</p>
+<p>pwd    显示当前目录的路径名<br>mkdir  创建文件夹，可嵌套创建多层文件夹，mkdir abc/123<br>touch  创建文件，touch a.txt<br>open   打开文件<br>file   显示文件类型<br>find   使用匹配表达式查找文件 eg：find . -name “*.c” -print<br>more   分屏显示文件内容<br>cat    显示或连接文件<br>pg     分页格式化显示文件内容<br>in     联接文件   eg：ln -s file1 file2<br>od     显示非文本文件内容</p>
+<p>remove  //删除<br>rm 1.txt 删除名字为1.txt的文件<br>rm -rf abc/   删除当前目录下abc名字的文件夹，删除文件夹的同时，里面的文件也会统统删除。<br>rmdir  删除文件夹 </p>
+<p>move<br>mv 1.txt 123.txt 移动+改名，将当前目录的1.txt 移动到当前目录，并改名为123.txt<br>mvdir 移动或者重命名一个目录 eg：mvdir dir1 dir2<br>cp 1.txt 2.txt 将当前目录下的1.txt拷贝一份，并放到当前目录下，并命名为2.txt  </p>
+<p>vi (vim) 命令有3种模式<br>命令模式，一般模式，编辑模式  </p>
+<p>a，由一般模式进入编辑模式  i,o, shift+a,shift+i,shift+o键<br>Esc  由编辑模式退回一般模式，</p>
+<p>命令模式，以：开头<br>：q  退出<br>：w   保存<br>：wq  保存退出<br>：q!  不保存退出<br>: set nu 显示行号<br>：set nonu 隐藏行号  </p>
+<p>一般模式<br>dd 删除一行<br>num dd 删除光标下的num行  </p>
+<p>ctrl+x 剪切<br>p 将剪切内容粘贴到光标所在行下面<br>yy 复制<br>num yy 复制5行<br>u 撤销上一次操作  （undo）<br>ctrl+r 恢复操作 （redo）  </p>
+<p>gg 将光标定位在第一行<br>shift 将光标定位到最后一行<br>num shift+g 将光标定位在第num行  </p>
+<p>一行执行多个命令 例如 在桌面创建ABC文件，在ABC文件夹下面创建123文件夹，在123文件创建ABC.txt文件<br>cd Desktop &amp;&amp; mkdir ABC/123 &amp;&amp; touch ABC.txt //创建文件夹中的文件夹，如果没有该文件夹，会自动创建文件夹。嵌套创建  </p>
+</li>
+<li><h4 id="终端命令行上传项目到GitHub的步骤"><a href="#终端命令行上传项目到GitHub的步骤" class="headerlink" title="终端命令行上传项目到GitHub的步骤"></a>终端命令行上传项目到GitHub的步骤</h4><h5 id="1-创建Github账号："><a href="#1-创建Github账号：" class="headerlink" title="1. 创建Github账号："></a>1. 创建Github账号：</h5><p><a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a>  —&gt; Pricing and Signup —&gt; Create a free account  </p>
+<h5 id="2-GitHub创建SSH公钥：（这一步是为了上传代码的安全性）"><a href="#2-GitHub创建SSH公钥：（这一步是为了上传代码的安全性）" class="headerlink" title="2. GitHub创建SSH公钥：（这一步是为了上传代码的安全性）:"></a>2. GitHub创建SSH公钥：（这一步是为了上传代码的安全性）:</h5><p>   1: mkdir .ssh ———创建ssh证书<br>   2: cd .ssh ————进入到ssh证书目录<br>   3: ssh-keygen -t rsa -C “example@.com” ———生成私钥,公钥，“”内填写你注册GitHub的邮箱<br>   4: ls -la ———显示SSH证书内容,这步可以省略<br>   5: pbcopy&lt; ~/.ssh/id_rsa.pub ——-把私钥复制到粘贴板<br>   6: 在自己的GitHub主页网站上点击头像选择Settings, 点击左侧SSH and GPG keys ,选择SSH keys,复制私钥,点击添加<br>   7: ssh -T <a href="mailto:git@github.com" target="_blank" rel="noopener">git@github.com</a> ———把证书和GitHub关联</p>
+</li>
+</ul>
+<h5 id="3-建立一个git远程仓库（在github里可建一个新仓库），上传本地项目至git上"><a href="#3-建立一个git远程仓库（在github里可建一个新仓库），上传本地项目至git上" class="headerlink" title="3. 建立一个git远程仓库（在github里可建一个新仓库），上传本地项目至git上"></a>3. 建立一个git远程仓库（在github里可建一个新仓库），上传本地项目至git上</h5><pre><code>1.首先在GitHub里新建一个仓库，将仓库链接copy下来
+2.cd /  ——进入到你要上传的工程所在目录，最简单的办法就是把你要上传的工程直接拖到cd /后面
+3.git init   --建立本地仓库 (输入一次，本电脑终身有用)
+4.git add .  --添加新项目名称暂存  git add *  //加入所有项目
+5.git commit --m &apos;&apos;   ------在‘’内添加日志log
+6.git remote add origin https://github.com/xxx/xxx   ----(url为仓库链接，输入一次，本电脑终身有用)添加远程仓库
+7.git push -u origin master ------ 推送至远程仓库 （-u 为第一次推送需要 upstream）
+（）
+</code></pre><ul>
+<li><h4 id="git-其他命令"><a href="#git-其他命令" class="headerlink" title="git 其他命令"></a>git 其他命令</h4><pre><code>git ls-files  ------------查看跟踪文件（查看远程仓库中的文件)
+git status         -------检查状态 如果都是绿的 证明成功  
+git pull origin master  ----------从远程仓库拉取项目 
+git commit -a -m &quot;提交的描述信息&quot; ------- 命令-a 选项可只将所有被修改或者已删除的且已经被git管理的文档提交倒仓库中。如果只是修改或者删除了已被Git 管理的文档，是没必要使用git add 命令的。
+git commit --amend 对于已经修改提交过的注释，如果需要修改，可以借助 git commit --amend 来进行。
+git log      --------查看提交历史 eg：git log -p -2 (查看最近两次更新的提交差异)   
+git log --help  ----------------帮助
+git log --pretty=format:&quot;%h - %an, %ar : %s&quot;  ----定制要显示的记录格式
+git log --pretty=oneline -------将每个提交放在一行显示，
+git log --oneline --decorate --graph --all  -----它会输出你的提交历史、各个分支的指向以及项目的分支分叉情况。
+git clone http:xxx    -----------------------克隆远程仓库    
+git remote add [shortname] [url]   -----添加远程仓库、
+git fetch [remote-name]    -------------从远程仓库抓取数据
+git pull [remote-name] [branch-name] 从远程仓库拉取数据，并合并本地数据
+git push [remote-name] [branch-name]  --------------将本地仓库中的数据推送到远程仓库，本地的 master 分支推送到 origin 服务器（git push origin master），只有在所克隆的服务器上有写权限，或者同一时刻没有其他人在推数据，这条命令才会如期完成任务。如果在你推数据前，已经有其他人推送了若干更新，那你的推送操作就会被驳回。你必须先把他们的更新抓取到本地，合并到自己的项目中，然后才可以再次推送。
+git remote show [remote-name]  ----查看某个远程仓库的详细信息
+git remote rm paul  ---------------- 远程仓库的删除
+git remote rename ------------------ 远程仓库的重命名
+git tag -------------------- 列出现有标签
+eg:
+git tag -l &apos;v1.4.2.*&apos;    ---------- 只对 1.4.2 系列的版本感兴趣，可以运行此命令：、
+git tag -a v1.4 -m &apos;my version 1.4&apos; ------------新建标签，-a（annotated）
+git show v1.4----- 查看相应标签的版本信息，并连同显示打标签时的提交对象
+git push origin v1.2  ----------默认情况下，git push 并不会把标签传送到远端服务器上，只有通过显式命令才能分享标签到远端仓库,
+git push origin --tags   ---------一次推送所有本地新增的标签上去，可以使用 --tags
+</code></pre><h6 id="忽略某些文件"><a href="#忽略某些文件" class="headerlink" title="忽略某些文件"></a>忽略某些文件</h6><p>一般我们总会有些文件无需纳入 Git 的管理，也不希望它们总出现在未跟踪文件列表。通常都是些自动生成的文件，比如日志文件，或者编译过程中创建的临时文件等。我们可以创建一个名为 .gitignore 的文件，列出要忽略的文件模式。eg：  </p>
+<pre><code>cat .gitignore        创建.gitignore 文件  
+</code></pre><p><em>.[oa]                 //忽略所有以.a或者.o结尾的文件，可能还需要忽略 log，tmp 或者 pid 目录  
+</em>~                    //忽略所有以波浪符（~）结尾的文件  </p>
+<p># 此为注释 – 将被 Git 忽略<br># 忽略所有 .a 结尾的文件<br><em>.a<br># 但 lib.a 除外<br>!lib.a<br># 仅仅忽略项目根目录下的 TODO 文件，不包括 subdir/TODO<br>/TODO<br># 忽略 build/ 目录下的所有文件<br>build/<br># 会忽略 doc/notes.txt 但不包括 doc/server/arch.txt<br>doc/</em>.txt<br># 忽略 doc/ 目录下所有扩展名为 txt 的文件<br>doc/*<em>/</em>.txt   </p>
+</li>
+<li><h5 id="git如何移除某文件的版本控制"><a href="#git如何移除某文件的版本控制" class="headerlink" title="git如何移除某文件的版本控制"></a>git如何移除某文件的版本控制</h5><p>  1：还没有加到版本控制中</p>
+<p>   (1)还没有git  add</p>
+<pre><code>在   .gitignore中添加
+</code></pre><p>   (2)已经git add</p>
+<pre><code>先   git  rm  -r  --cached   文件
+
+在   .gitignore中添加
+</code></pre><p>  2：已经加到版本控制中</p>
+<pre><code> 先   git  rm  -r  --cached   文件  
+
+在   .gitignore中添加
+
+最后  gti commit -m  &apos;提交.gitignore&apos;
+</code></pre></li>
+</ul>
+<p>注解：<br>      1:git update-index –assume-unchanged <path></path>   这个命令能让Git假装看不见目标文件的改变，但文件本身还是在 Git 的历史记录里的，所以团队的每个人在 fetch 的时候都会拉到目标 文件 的 变更。团队要每次对运行改命令，否则忽略不掉</p>
+<pre><code>git update-index --assume-unchanged /path/to/file       #忽略跟踪  
+
+git update-index --no-assume-unchanged /path/to/file  #恢复跟踪 
+</code></pre><p>   2:修改.gitignore添加完忽略文件，然后执行下列命令<br>     git rm -r –cached .<br>     git add .<br>     git commit -m ‘update .gitignore’<br>    也是假装让git看不见文件，要团队中每个人都运行改命令，否则忽略不掉</p>
+<h6 id="删除git文件"><a href="#删除git文件" class="headerlink" title="删除git文件"></a>删除git文件</h6><pre><code>git rm -r fileName  //本地的文件也会删除  
+git rm -r --cached FileName  //仅仅删除git上，不删除本地文件
+</code></pre><h6 id="删除git本地仓库"><a href="#删除git本地仓库" class="headerlink" title="删除git本地仓库"></a>删除git本地仓库</h6><pre><code>ls -a  #查看内部文件
+rm -rf .git #强删.git
+</code></pre><h6 id="撤销操作"><a href="#撤销操作" class="headerlink" title="撤销操作"></a>撤销操作</h6><pre><code>git commit --amend         修改最后一次提交  
+git reset HEAD &lt;file&gt;      取消已经暂存的文件，又回到了之前已修改未暂存的状
+git checkout -- &lt;file&gt;     回到之前修改前的状态
+git reset --hard HEAD^     版本回撤
+git reset --hard 版本号     版本回撤后又想恢复最后一个版本，只要记得版本号就可以 
+</code></pre><h6 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h6><pre><code>git branch branchName        创建分支
+git checkout branchName      切换分支
+git checkout -b iss53   创建该分支，并切换至该分支等于下面两条命令  
+1.git branch iss53  
+2.git checkout iss53
+
+git merge branchName       合并分支2
+git branch -d branchName   删除分支
+git branch    列出所有分支名
+git branch -v    要查看各个分支最后一个提交对象的信息
+git branch --merged  从清单中筛选出你已经（或尚未 --no-merged ）与当前分支合并的分支
+git branch -d  branchName 删除分支 （用大写的删除选项 -D 强制执行）
+git fetch origin 同步远程服务器上的数据到本地
+git push (远程仓库名) (分支名)   推送本地分支  git push origin serverfix:serverfix
+git rebase master   
+git rebase --onto master server client    取出 client 分支，找出 client 分支和 server 分支的共同祖先之后的变化，然后把它们在 master 上重演一遍   
+git rebase [主分支] [特性分支] 
+</code></pre><ul>
+<li><h2 id="Git使用常见问题"><a href="#Git使用常见问题" class="headerlink" title="Git使用常见问题"></a>Git使用常见问题</h2>（1）push失败问题：Updates were rejected because the tip of your current branch is behind<br>有如下几种解决方法：</li>
+</ul>
+<p>1.使用强制push的方法：</p>
+<p>$ git push -u origin master -f</p>
+<p>这样会使远程修改丢失，一般是不可取的，尤其是多人协作开发的时候。</p>
+<p>2.push前先将远程repository修改pull下来</p>
+<p>$ git pull origin master</p>
+<p>$ git push -u origin master</p>
+<p>3.若不想merge远程和本地修改，可以先创建新的分支：</p>
+<p>$ git branch [name]</p>
+<p>然后push</p>
+<p>$ git push -u origin [name]</p>
+<p>（2）</p>
+<ul>
+<li><h2 id="Git使用工具（SourceTreee-的介绍"><a href="#Git使用工具（SourceTreee-的介绍" class="headerlink" title="Git使用工具（SourceTreee)的介绍"></a>Git使用工具（SourceTreee)的介绍</h2><p> SourceTree 是 Windows 和Mac OS X 下免费的 Git 和 Hg 客户端，拥有可视化界面，容易上手操作。同时它也是Mercurial和Subversion版本控制系统工具。支持创建、提交、clone、push、pull 和merge等操作。</p>
+</li>
+<li><h2 id="Git与其他版本控制系统的区别"><a href="#Git与其他版本控制系统的区别" class="headerlink" title="Git与其他版本控制系统的区别"></a>Git与其他版本控制系统的区别</h2></li>
+<li><h4 id="1-直接记录快照，而非差异比较"><a href="#1-直接记录快照，而非差异比较" class="headerlink" title="1. 直接记录快照，而非差异比较"></a>1. 直接记录快照，而非差异比较</h4>Git 和其他版本控制系统的主要差别在于，Git 只关心文件数据的整体是否发生变化，而大多数其他系统则只关心文件内容的具体差异。这类系统（CVS，Subversion，Perforce，Bazaar 等等）每次记录有哪些文件作了更新，以及都更新了哪些行的什么内容。<br>Git 并不保存这些前后变化的差异数据。实际上，Git 更像是把变化的文件作快照后，记录在一个微型的文件系统中。每次提交更新时，它会纵览一遍所有文件的指纹信息并对文件作一快照，然后保存一个指向这次快照的索引。为提高性能，若文件没有变化，Git 不会再次保存，而只对上次保存的快照作一链接。  </li>
+<li><h4 id="2-近乎所有操作都是本地执行"><a href="#2-近乎所有操作都是本地执行" class="headerlink" title="2. 近乎所有操作都是本地执行"></a>2. 近乎所有操作都是本地执行</h4> Git 中的绝大多数操作都只需要访问本地文件和资源，不用连网。但其他的（比如SVN）均是需要连接网络，虽然可以编辑文件，但无法提交更新，因为数据库在网络上。  </li>
+<li><h4 id="3-多数操作仅添加数据"><a href="#3-多数操作仅添加数据" class="headerlink" title="3.多数操作仅添加数据"></a>3.多数操作仅添加数据</h4><p>常用的 Git 操作大多仅仅是把数据添加到数据库。因为任何一种不可逆的操作，比如删除数据，都会使回退或重现历史版本变得困难重重。在别的 VCS 中，若还未提交更新，就有可能丢失或者混淆一些修改的内容，但在 Git 里，一旦提交快照之后就完全不用担心丢失数据，特别是养成定期推送到其他仓库的习惯的话。</p>
+</li>
+<li><h2 id="引用文献及文章"><a href="#引用文献及文章" class="headerlink" title="引用文献及文章"></a>引用文献及文章</h2><p><a href="https://git-scm.com/book/zh/v1" target="_blank" rel="noopener">ProGit官方</a> <a href="https://git-scm.com/book/zh/v1" target="_blank" rel="noopener">https://git-scm.com/book/zh/v1</a><br><a href="https://marklodato.github.io/visual-git-guide/index-zh-cn.html" target="_blank" rel="noopener">图解Git</a>  <a href="https://marklodato.github.io/visual-git-guide/index-zh-cn.html" target="_blank" rel="noopener">https://marklodato.github.io/visual-git-guide/index-zh-cn.html</a><br><a href="http://www.cocoachina.com/programmer/20180105/21762.html" target="_blank" rel="noopener">Git知识总览</a> <a href="http://www.cocoachina.com/programmer/20180105/21762.html" target="_blank" rel="noopener">http://www.cocoachina.com/programmer/20180105/21762.html</a><br><a href="https://blog.csdn.net/hellow__world/article/details/72529022" target="_blank" rel="noopener">详细透彻解读Git与SVN的区别（集中式VS分布式)</a> <a href="https://blog.csdn.net/hellow__world/article/details/72529022" target="_blank" rel="noopener">https://blog.csdn.net/hellow__world/article/details/72529022</a><br><a href="http://www.cnblogs.com/yajunLi/p/5652976.html" target="_blank" rel="noopener">Git 终端命令</a><a href="http://www.cnblogs.com/yajunLi/p/5652976.html" target="_blank" rel="noopener">http://www.cnblogs.com/yajunLi/p/5652976.html</a></p>
+</li>
+</ul>
+</div></header></article><div class="comments" id="lv-container" data-id="city" data-uid="your uid"><script>(function(d, s) {var j, e = d.getElementsByTagName(s)[0];if (typeof LivereTower === 'function') { return; } j = d.createElement(s);j.src = 'https://cdn-city.livere.com/js/embed.dist.js';j.async = true;e.parentNode.insertBefore(j, e);})(document, 'script');</script></div></main><footer class="foot"><div class="foot-copy">&copy; 2016-2018 平平</div></footer><script src="/js/scroller.js"></script><script src="/js/main.js"></script></body></html>

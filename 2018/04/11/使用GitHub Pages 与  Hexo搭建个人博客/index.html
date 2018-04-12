@@ -6,7 +6,7 @@
 <li><h2 id="GitHub-pages服务器托管"><a href="#GitHub-pages服务器托管" class="headerlink" title="GitHub pages服务器托管"></a>GitHub pages服务器托管</h2></li>
 </ul>
 <p>将项目源码托管在 github 上，使用 github 的 pages 服务。其实 github 的 pages 服务不只是可以展示博客，你的每一个 github 仓库都有 pages 服务，可以通过简单的设置通过项目的 index.html 为入口展示你的项目，这一点也很实用！但是大部分的 pages 服务都是用来搭建个人博客的.  </p>
-<p>第一步：新建一个git仓库，注意仓库名命名一定得是以下格式：==用户名.github.io==，这个仓库存放所有博客文章等。</p>
+<p>第一步：新建一个git仓库，注意仓库名命名一定得是以下格式：用户名.github.io，这个仓库存放所有博客文章等。</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fq8jhaizsuj30st0mln1b.jpg" alt="github_1"></p>
 <ul>
 <li><h2 id="腾讯云购买域名"><a href="#腾讯云购买域名" class="headerlink" title="腾讯云购买域名"></a>腾讯云购买域名</h2></li>
@@ -70,13 +70,13 @@
 <li><p>Hexo文件夹下内容：<pre><br>hexo/<br>  |- node_modules/  # hexo需要的模块，不需要上传GitHub<br>  |- themes/        # 主题文件，需要上传GitHub的dev分支<br>  |- sources/       # 博文md文件，需要上传GitHub的dev分支，里面有个posts文件夹：放文章的。<br>  |- public/        # 生成的静态页面，由hexo deploy自动上传到gh-page分支<br>  |- package.json   # 记录hexo需要的包信息，不需要上传GitHub<br>  |- _config.yml    # 全局配置文件，需要上传GitHub的dev分支<br>  |- .gitignore     # hexo生成默认的.gitignore，它已经配置好了不需要上传的hexo文件 </pre></p>
 </li>
 </ol>
-<p>5.切换主题：<br>    hexo默认主题为landscape，其他主题可在hexo官网选，下载主题好后，切记一定得看该主题的安装说明，有些主题需要安装插件，安装好后，建议执行下 ==hexo clean==命令</p>
+<p>5.切换主题：<br>    hexo默认主题为landscape，其他主题可在hexo官网选，下载主题好后，切记一定得看该主题的安装说明，有些主题需要安装插件，安装好后，建议执行下hexo clean命令</p>
 <ol start="6">
 <li>上传博客：<br> <pre>post s -g   #生成网页，可本地预览<br>post d -g    #生成网页，并部署到git上 </pre><br>3种方式：<br>第一种：自己已经拥有.md文件，只要把.md文件放到 source/_post文件夹下面，执行以上命令即可。<br>第二种：post new “BlogName”,再执行以上命令。<br>第三种：post new page “BlogName”,再执行以上命令。</li>
 </ol>
 <ul>
 <li><h4 id="Hexo-插入图片"><a href="#Hexo-插入图片" class="headerlink" title="Hexo 插入图片"></a>Hexo 插入图片</h4><p>插入图片有3种方法，第一种是不用插件的情况，第二种是使用一种hexo的插件。第三种，上传图片生成图片链接软件：<a href="http://www.jianshu.com/p/e46a91ae20b9" target="_blank" rel="noopener">iPic</a>  还可以生成MarkDown 格式的图片链接。  </p>
-<p>但都需要同一个前提：修改 ==_config.yml== 配置文件中的 ==post_asset_folder== 项为 true.<br>创建博客使用命令创建：hexo new [layout] “新博客名”，layout项可以省略。<br>使用完命令之后，在source/_post文件夹里面就会出现一个“新博客名.md”的文件和一个“新博客名”的文件夹。下一步就是把需要的图片放到新创建的那个文件夹里面去。  </p>
+<p>但都需要同一个前提：修改 _config.yml 配置文件中的 post_asset_folder 项为 true.<br>创建博客使用命令创建：hexo new [layout] “新博客名”，layout项可以省略。<br>使用完命令之后，在source/_post文件夹里面就会出现一个“新博客名.md”的文件和一个“新博客名”的文件夹。下一步就是把需要的图片放到新创建的那个文件夹里面去。  </p>
 <h6 id="引用图片的第一种方法"><a href="#引用图片的第一种方法" class="headerlink" title="引用图片的第一种方法"></a>引用图片的第一种方法</h6>     
 <p>用此种方法，而不是以前的<img src="" alt="">方法，前提是你的hexo的版本是hexo3以上，到package.json里面看一下吧。如果不是hexo3以上的版本，那就只能用第二种方法了。  </p>
 <h6 id="引用图片的第二种方法"><a href="#引用图片的第二种方法" class="headerlink" title="引用图片的第二种方法"></a>引用图片的第二种方法</h6><p><a href="https://github.com/CodeFalling/hexo-asset-image" target="_blank" rel="noopener">插件链接</a>  </p>
